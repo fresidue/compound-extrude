@@ -86,6 +86,8 @@ TEST_SEGMENTS = [
 //
 // If "points" are included the module will create a polygon and apply
 //
+
+
 color("red")
 compound_extrude(
   points = biased_star_points(6, 100, 20),
@@ -319,3 +321,22 @@ for (placement = placements) {
   multmatrix(m = placement) 
   cube(size = 20, center = false);
 }
+
+////////
+// 10
+////////
+// 
+// You can also just skip the extrusion and only use the transforms
+//
+module tran66444 () {
+  Ty(2000)
+  Tx(4000)
+  children();
+};
+for (placement = placements) {
+  color("red")
+  tran66444()
+  multmatrix(m = placement)
+  sphere(r = 15);
+}
+
