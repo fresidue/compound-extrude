@@ -63,7 +63,7 @@ module sidenode () {
 }
 
 // The common extrusion geometry used by all examples
-TEST_SEGMENTS = [
+EXAMPLE_SEGMENTS = [
   [500],
   [320, 180, 0],
   [300],
@@ -74,11 +74,22 @@ TEST_SEGMENTS = [
   [333]
 ];
 
+function getExampleTranslationArr (index) = 
+  let (
+    num = 4,
+    offset = 1000,
+    xInd = index % num,
+    yIind = floor(index / num),
+    translation = [xInd * offset, yIind * offset * 1.5, 0]
+  )
+  translation;
+
 ////////
 //
 // Examples
 //
 ////////
+
 
 ////////
 // 0
@@ -87,12 +98,15 @@ TEST_SEGMENTS = [
 // If "points" are included the module will create a polygon and apply
 //
 
-
-color("red")
-compound_extrude(
-  points = biased_star_points(6, 100, 20),
-  segments = TEST_SEGMENTS
-);
+module example0 (index) {
+  translate(v = getExampleTranslationArr(index = index)) 
+  color("red")
+  compound_extrude(
+    points = biased_star_points(6, 100, 20),
+    segments = EXAMPLE_SEGMENTS
+  );
+}
+example0(index = 0);
 
 
 ////////
@@ -101,13 +115,16 @@ compound_extrude(
 //
 // "points" and "paths" get directly applied to the polygon that gets extruded
 //
-Tx(1000)
-color("blue")
-compound_extrude(
-  points = [[-50, 0], [50, 50], [50, -50], [50, 0], [-50, 50], [-50, -50]],
-  paths = [[0, 1, 2, 0], [3, 4, 5, 3]],
-  segments = TEST_SEGMENTS
-);
+module example1 (index) {
+  translate(v = getExampleTranslationArr(index = index)) 
+  color("blue")
+  compound_extrude(
+    points = [[-50, 0], [50, 50], [50, -50], [50, 0], [-50, 50], [-50, -50]],
+    paths = [[0, 1, 2, 0], [3, 4, 5, 3]],
+    segments = EXAMPLE_SEGMENTS
+  );
+}
+example1(index = 1);
 
 
 ////////
@@ -116,11 +133,14 @@ compound_extrude(
 //
 // if NO "points" are included, compound_extrude acts on "children()"
 //
-Tx(2000)
-compound_extrude(
-  segments = TEST_SEGMENTS
-)
-circle(r = 50);
+module example2 (index) {
+  translate(v = getExampleTranslationArr(index = index)) 
+  compound_extrude(
+    segments = EXAMPLE_SEGMENTS
+  )
+  circle(r = 50);
+}
+example2(index = 2);
 
 
 ////////
@@ -129,24 +149,28 @@ circle(r = 50);
 //
 // difference seems to work, and put in 2 layers
 //
-color("teal")
-Tx(3000)
-compound_extrude(
-  segments = TEST_SEGMENTS
-)
-difference() {
-  circle(r = 80);
-  circle(r = 70);
-};
-color("gray")
-Tx(3000)
-compound_extrude(
-  segments = TEST_SEGMENTS
-)
-difference() {
-  circle(r = 70);
-  circle(r = 60);
-};
+module example3 (index) {
+  translate(v = getExampleTranslationArr(index = index)) 
+  color("teal")
+  compound_extrude(
+    segments = EXAMPLE_SEGMENTS
+  )
+  difference() {
+    circle(r = 80);
+    circle(r = 70);
+  };
+  color("gray")
+  Tx(3000)
+  compound_extrude(
+    segments = EXAMPLE_SEGMENTS
+  )
+  difference() {
+    circle(r = 70);
+    circle(r = 60);
+  };
+}
+example3(index = 3);
+
 
 
 ////////
@@ -155,16 +179,19 @@ difference() {
 //
 // difference with offset to inner and outer circle so thy intersect
 //
-Tx(4000)
-color("beige")
-compound_extrude(
-  segments = TEST_SEGMENTS
-)
-difference() {
-  circle(r = 80);
-  Tx(-18)
-  circle(r = 75);
-};
+module example4 (index) {
+  translate(v = getExampleTranslationArr(index = index)) 
+  color("beige")
+  compound_extrude(
+    segments = EXAMPLE_SEGMENTS
+  )
+  difference() {
+    circle(r = 80);
+    Tx(-18)
+    circle(r = 75);
+  };
+}
+example4(index = 4);
 
 
 ////////
@@ -172,16 +199,19 @@ difference() {
 ////////
 //
 // you can extract the summary, which includes relevant computed values (so they do not have to be recalculated)
+summary = summarize_segments(segments = EXAMPLE_SEGMENTS);
 //
-summary = summarize_segments(segments = TEST_SEGMENTS);
 // if you have already calculated the summary, you can inject it directly into "compound_extrude", which will use it blindly, and thus not recalculate it
-color("pink")
-Tx(5000)
-compound_extrude(
-  summary=summary,
-  segments=TEST_SEGMENTS
-)
-circle(r = 30);
+module example5 (index) {
+  translate(v = getExampleTranslationArr(index = index)) 
+  color("pink")
+  compound_extrude(
+    summary=summary,
+    segments=EXAMPLE_SEGMENTS
+  )
+  circle(r = 30);
+}
+example5(index = 5);
 
 
 ////////
@@ -190,21 +220,22 @@ circle(r = 30);
 //
 // Segments can include an optional "color" string
 //
-colors = ["red", "blue", undef, "green", "black", "yellow", "brown"];
-coloredSegments = [for (i= [0: 6])
-  let (
-    segment = TEST_SEGMENTS[i],
-    coloredSegment = [for (arg = segment) arg, colors[i]]
+module example6 (index) {
+  colors = ["red", "blue", undef, "green", "black", "yellow", "brown"];
+  coloredSegments = [for (i= [0: 6])
+    let (
+      segment = EXAMPLE_SEGMENTS[i],
+      coloredSegment = [for (arg = segment) arg, colors[i]]
+    )
+    coloredSegment
+  ];
+  translate(v = getExampleTranslationArr(index = index)) 
+  compound_extrude(
+    segments = coloredSegments
   )
-  coloredSegment
-];
-echo("coloredSegments", coloredSegments);
-// coloredSegments = [for (segment in TEST_SEGMENTS) [for (arg in segment) arg, ]]
-Ty(2000)
-compound_extrude(
-  segments = coloredSegments
-)
-circle(r = 50);
+  circle(r = 50);
+}
+example6(index = 6);
 
 
 ////////
@@ -213,43 +244,41 @@ circle(r = 50);
 //
 // We can also use the summary directly to place other objects along the extrusion in a well-defined manner
 //
-module tran33888 () {
-  Ty(2000)
-  Tx(1000)
-  children();
-} 
-fewPlacements = [
-  calc_normal_placement_mat(
-    summary = summary,
-    totLength = 200,
-    offset = 30,
-    dirAng = 12938123
-  ),
-  calc_normal_placement_mat(
-    summary = summary,
-    totLength = 1200,
-    offset = 30,
-    dirAng = 12938184837723423
-  ),
-  calc_normal_placement_mat(
-    summary = summary,
-    totLength = 3000,
-    offset = 30,
-    dirAng = 89123419234
+module example7 (index) {
+  fewPlacements = [
+    calc_normal_placement_mat(
+      summary = summary,
+      totLength = 200,
+      offset = 30,
+      dirAng = 12938123
+    ),
+    calc_normal_placement_mat(
+      summary = summary,
+      totLength = 1200,
+      offset = 30,
+      dirAng = 12938184837723423
+    ),
+    calc_normal_placement_mat(
+      summary = summary,
+      totLength = 3000,
+      offset = 30,
+      dirAng = 89123419234
+    )
+  ];
+  color("maroon")
+  translate(v = getExampleTranslationArr(index = index)) 
+  compound_extrude(
+    summary=summary,
+    segments=EXAMPLE_SEGMENTS
   )
-];
-color("maroon")
-tran33888()
-compound_extrude(
-  summary=summary,
-  segments=TEST_SEGMENTS
-)
-circle(r = 30);
-for (placement = fewPlacements) {
-  tran33888()
-  multmatrix(m = placement) 
-  sidenode();
+  circle(r = 30);
+  for (placement = fewPlacements) {
+    translate(v = getExampleTranslationArr(index = index)) 
+    multmatrix(m = placement) 
+    sidenode();
+  }
 }
+example7(index = 7);
 
 
 ////////
@@ -273,14 +302,19 @@ alteredSummary = [
   summary[3], // segLengths (length of each segment along the origins arc)
   summary[4], // a copy of segments that is USED by "calc_normal_placement_mat" but NOT by "compound_extrude"
 ];
-color("purple")
-Ty(2000)
-Tx(2000)
-compound_extrude(
-  summary=alteredSummary,
-  segments=TEST_SEGMENTS
-)
-circle(r = 30);
+//
+// and then this alteredSummary can be used to transform different segments
+module example8 (index) {
+  translate(v = getExampleTranslationArr(index = index)) 
+  color("purple")
+  compound_extrude(
+    summary=alteredSummary,
+    segments=EXAMPLE_SEGMENTS
+  )
+  circle(r = 30);
+}
+example8(index = 8);
+
 
 
 ////////
@@ -289,6 +323,7 @@ circle(r = 30);
 //
 // The calculated transforms are based off of the summary.aggTransforms, so any modifications to the aggTransforms are preserved by the placments
 //
+// define some placements (helical)
 steps = 500;
 stepLen = 10;
 placements = [for (i = [0: steps]) calc_normal_placement_mat(
@@ -298,29 +333,33 @@ placements = [for (i = [0: steps]) calc_normal_placement_mat(
   offset = 40,
   dirAng = i * 20
 )];
+//
+// and then use the placements
+//
+module example9 (index) {
+  translation = getExampleTranslationArr(index = index);
+
+  translate(v = translation) 
+  color("purple")
+  // the main shape
+  compound_extrude(
+    summary=alteredSummary,
+    segments=EXAMPLE_SEGMENTS
+  )
+  circle(r = 30);
+  // and all the little boxes using the placments
+  for (placement = placements) {
+    translate(v = translation) 
+    color("green")
+    multmatrix(m = placement) 
+    cube(size = 20, center = false);
+  }
+}
+example9(index = 9);
+
 
 // Do an overlay of a simple circle pipe with the add-ons
-module tran22277 () {
-  Ty(2000)
-  Tx(3000)
-  children();
-};
 
-color("purple")
-tran22277()
-// the main shape
-compound_extrude(
-  summary=alteredSummary,
-  segments=TEST_SEGMENTS
-)
-circle(r = 30);
-// and all the little boxes using the placments
-for (placement = placements) {
-  color("green")
-  tran22277()
-  multmatrix(m = placement) 
-  cube(size = 20, center = false);
-}
 
 ////////
 // 10
@@ -328,15 +367,14 @@ for (placement = placements) {
 // 
 // You can also just skip the extrusion and only use the transforms
 //
-module tran66444 () {
-  Ty(2000)
-  Tx(4000)
-  children();
-};
-for (placement = placements) {
-  color("red")
-  tran66444()
-  multmatrix(m = placement)
-  sphere(r = 15);
+module example10 (index) {
+  translation = getExampleTranslationArr(index = index);
+  for (placement = placements) {
+    color("red")
+    translate(v = translation) 
+    multmatrix(m = placement)
+    sphere(r = 15);
+  }
 }
+example10(index = 10);
 

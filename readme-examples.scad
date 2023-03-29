@@ -56,7 +56,7 @@ module example1 (index) {
   compound_extrude(segments = SEGMENTS)
   circle(r = 50);
 }
-// example1(index = 1);
+example1(index = 1);
 
 
 // generate the summary
