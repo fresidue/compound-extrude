@@ -116,7 +116,7 @@ function summarize_segments (segments) =
         isStraight = isSegStraight(segment)
       )
       assert(isCurve || isStraight, str("Invalid segment length. Must be either 1 (or 2 with optional color), which provide [length, color] for a straight segment; or 3 (or 4 with optional color), which are [curveR, curveAng, dirAng] for a curved segment), but we found ", len(segment)))
-      assert(!isStraight || segment[0] > 0, str("Invalid straight segment length found at index ", i, " which is negative"))
+      assert(!isStraight || segment[0] >= 0, str("Invalid straight segment length found at index ", i, " which is negative"))
       assert(!isStraight || segment[1] == undef || str(segment[1])==segment[1], str("Invalid straight segment color found at index ", i, " which must be a string WHEN included"))
 
       assert(!isCurve || segment[0] > 0, str("Invalid curved segment curveR (i.e. segment[0]) found at index ", i, " which is negative"))
